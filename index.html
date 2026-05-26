@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Laseur Antique — Art Nouveau · Art Deco · Amsterdam School</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300;1,9..40,400&family=Cormorant+Garamond:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/lenis@1.1.13/dist/lenis.css">
+<style>
+/* ============================================================
+   RESET & TOKENS
+   ============================================================ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --font:"DM Sans",sans-serif;
+  --font-serif:"Cormorant Garamond",Georgia,"Book Antiqua",serif;
+  --black:#000;--white:#fff;
+  --cream:#f4eee2;          /* warm ivory (antique tone) */
+  --cream-warm:#faf6ef;
+  --brass:#a88a4b;          /* antique brass accent */
+  --brass-dark:#7d6532;
+  --muted:oklch(.708 0 0);
+  --radius-btn:20px;
+  --ease:cubic-bezier(0,1,.4,1);
+  --ease-out:cubic-bezier(0,1,.4,1);
+  --ease-text:cubic-bezier(.22,1,.36,1);
+  --container:1440px;
+  --gutter:clamp(20px,3vw,48px);
+  --fluid-sm:clamp(1.5rem,1.2rem + 1.5vw,3rem);
+  --fluid-md:clamp(3rem,2rem + 3vw,6rem);
+  --fluid-lg:clamp(4rem,3rem + 5vw,9.375rem);
+  --fluid-xl:clamp(6.25rem,5.36rem + 4.46vw,9.375rem);
+}
+html{overflow-x:hidden}
+html.lenis,html.lenis body{height:auto}
+.lenis.lenis-smooth{scroll-behavior:auto!important}
+.lenis.lenis-smooth [data-lenis-prevent]{overscroll-behavior:contain}
+.lenis.lenis-stopped{overflow:hidden}
+.lenis.lenis-scrolling iframe{pointer-events:none}
+body{
+  font-family:var(--font);font-size:16px;line-height:1.25;
+  color:var(--black);background:var(--white);
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+img,video{display:block;max-width:100%;height:auto}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit}
+ul,ol{list-style:none}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+
+/* ============================================================
+   HEADER — always transparent + white text (matches lightshiprv)
+   ============================================================ */
+.c-header{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 var(--gutter);height:72px;
+  color:var(--white);
+  transition:color .5s var(--ease-text);
+}
+.c-header.is-light{color:#111}
+.c-header.is-light .c-header_cta{background:var(--black);color:var(--white)}
+.c-header_nav{display:flex;gap:32px;align-items:center}
+.c-header_link{
+  font-size:12px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;
+  opacity:.9;transition:opacity .25s,color .25s;
+  position:relative;padding:6px 0;
+}
+.c-header_link:hover{opacity:1;color:var(--brass)}
+.c-header_logo{
+  position:absolute;left:50%;transform:translateX(-50%);
+  display:flex;align-items:center;justify-content:center;
+  height:48px;
+}
+.c-header_logo img{
+  display:block;height:44px;width:auto;
+  filter:brightness(0) invert(1); /* white on dark hero */
+  transition:filter .5s var(--ease-text);
+}
+.c-header.is-light .c-header_logo img{filter:none}
+.brand-fallback{
+  font-family:var(--font-serif);
+  font-size:14px;font-weight:500;letter-spacing:.32em;
+  color:inherit;
+}
+.c-header_cta{
+  display:flex;align-items:center;height:40px;
+  padding:0 22px;border-radius:var(--radius-btn);
+  background:var(--white);color:var(--black);
+  font-size:12px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;
+  transition:transform .3s var(--ease-text),background .3s,color .3s;
+}
+.c-header_cta:hover{transform:scale(1.03);background:var(--brass);color:var(--white)}
+.c-header_right{display:flex;align-items:center;gap:24px}
+
+/* ============================================================
+   HERO — pure sticky + inner card scale (matches lightshiprv pattern)
+   ============================================================ */
+.c-hero{
+  position:relative;
+  background:var(--cream);
+  /* no fixed height — section grows with sticky + grid below */
+}
+.c-hero_sticky{
+  position:relative;top:0;
+  height:100vh;          /* full viewport for the video band */
+  padding:8px;
+  overflow:hidden;
+}
+.c-hero_mask{
+  position:relative;
+  width:100%;height:100%;
+  border-radius:12px;overflow:hidden;
+  background:#0a0a0a; /* fallback while video loads */
+}
+.c-hero_inner{
+  position:absolute;inset:0;
+  /* full-bleed video — no scale to avoid black edge from mask */
+  border-radius:0;overflow:hidden;
+}
+.c-hero_bg{
+  position:absolute;inset:0;
+  background:#0a0a0a url('https://images.unsplash.com/photo-1542856391-010fb87dcfed?auto=format&fit=crop&w=2400&q=85') center/cover no-repeat;
+}
+.c-hero_video{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;
+  display:block;
+}
+.c-hero_bg::after{
+  content:"";position:absolute;inset:0;z-index:1;
+  background:linear-gradient(180deg,rgba(0,0,0,.25) 0%,rgba(0,0,0,.1) 40%,rgba(0,0,0,.55) 100%);
+  pointer-events:none;
+}
+.c-hero_content{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  justify-content:flex-end;padding:0 var(--gutter) 120px; /* leave room above scroll hint */
+  color:var(--white);
+}
+.c-hero h1{
+  font-size:clamp(40px,4.4vw,64px);font-weight:400;
+  letter-spacing:-.04em;line-height:1.05;max-width:900px;
+}
+.c-hero h1 .line{display:block;overflow:hidden;padding-bottom:.08em;margin-bottom:-.08em}
+.c-hero h1 .word{
+  display:inline-block;margin-right:.22em;
+  opacity:0;
+  transform:translateY(60%);
+  transition:opacity 1.2s var(--ease-text), transform 1.2s var(--ease-text);
+  will-change:opacity, transform;
+}
+.c-hero h1 .word:last-child{margin-right:0}
+/* CSS-driven stagger (more reliable than inline transitionDelay) */
+.c-hero h1 .word:nth-child(1){transition-delay:0ms}
+.c-hero h1 .word:nth-child(2){transition-delay:90ms}
+.c-hero h1 .word:nth-child(3){transition-delay:180ms}
+.c-hero h1 .word:nth-child(4){transition-delay:270ms}
+.c-hero h1 .word:nth-child(5){transition-delay:360ms}
+.c-hero h1 .word:nth-child(6){transition-delay:450ms}
+.c-hero h1 .word:nth-child(7){transition-delay:540ms}
+.c-hero h1.is-revealed .word{opacity:1;transform:translateY(0)}
+
+.c-hero_scroll{
+  position:absolute;bottom:28px;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:12px;
+  font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--white);opacity:.85;
+  font-weight:400;
+}
+.c-hero_scroll-line{
+  width:1px;height:32px;background:var(--white);
+  animation:scrollPulse 2.2s ease-in-out infinite;
+}
+@keyframes scrollPulse{
+  0%{transform:scaleY(0);transform-origin:top}
+  50%{transform:scaleY(1);transform-origin:top}
+  51%{transform-origin:bottom}
+  100%{transform:scaleY(0);transform-origin:bottom}
+}
+
+/* ============================================================
+   HERO GRID — 3-col × 5-image cluster (lightshiprv pattern)
+   Images converge from scattered positions as user scrolls.
+   ============================================================ */
+.c-hero_grid-wrap{
+  position:relative;
+  display:flex;justify-content:center;
+  padding:8px;
+  background:var(--cream);
+  overflow:hidden; /* prevent items from visually escaping wrap during converge */
+}
+.c-hero_grid{
+  display:grid;
+  grid-template-columns:392px 392px 392px;
+  gap:8px;
+  max-width:1192px;width:100%;
+}
+.c-hero_col{
+  display:flex;flex-direction:column;gap:8px;
+}
+.c-hero_grid-item{
+  position:relative;overflow:hidden;border-radius:12px;
+  background:#1a1a18;
+  /* JS-driven convergence: scattered → cluster */
+  --tx:0px; --ty:0px; --s:.88; --o:0;
+  transform:translate3d(var(--tx),var(--ty),0) scale(var(--s));
+  opacity:var(--o);
+  transition:none; /* JS RAF drives values directly */
+  will-change:transform,opacity;
+}
+.c-hero_grid-item img{
+  width:100%;height:100%;object-fit:cover;
+  transition:transform 1.6s var(--ease);
+}
+.c-hero_grid-item:hover img{transform:scale(1.06)}
+
+/* Item heights (lightshiprv-matching proportions) */
+.c-hero_grid-item{height:235px}
+.c-hero_grid-item.-small{height:219px}
+.c-hero_grid-item.-large{height:462px} /* 235 + 8 + 219 = 462 */
+
+/* Initial scattered offsets — tightened to prevent column overlap */
+.c-hero_grid-item[data-img="1"]{--tx-init:-60px; --ty-init:-40px; z-index:1}
+.c-hero_grid-item[data-img="2"]{--tx-init:-80px; --ty-init: 50px; z-index:2}
+.c-hero_grid-item[data-img="3"]{--tx-init:  0px; --ty-init: 70px; z-index:3} /* center large on top */
+.c-hero_grid-item[data-img="4"]{--tx-init: 80px; --ty-init:-50px; z-index:2}
+.c-hero_grid-item[data-img="5"]{--tx-init: 60px; --ty-init: 40px; z-index:1}
+
+@media(max-width:900px){
+  .c-hero_grid{grid-template-columns:1fr;max-width:none}
+  .c-hero_col{gap:8px}
+  .c-hero_grid-item.-large{height:300px}
+}
+
+/* ============================================================
+   INTRO
+   ============================================================ */
+.s-intro{
+  padding:var(--fluid-lg) var(--gutter);
+  max-width:var(--container);margin:0 auto;
+}
+.s-intro p{
+  font-size:clamp(18px,1.5vw,22px);font-weight:400;
+  color:var(--muted);line-height:1.5;max-width:860px;
+}
+
+/* ============================================================
+   CATEGORIES — Art Nouveau / Art Deco / Amsterdam School / Asian
+   ============================================================ */
+.s-categories{
+  padding:var(--fluid-md) var(--gutter) var(--fluid-lg);
+  max-width:var(--container);margin:0 auto;
+}
+.s-cat_head{
+  margin-bottom:32px;
+  display:flex;align-items:end;justify-content:space-between;gap:32px;
+}
+.s-cat_head h2{
+  font-family:var(--font-serif);
+  font-size:clamp(28px,3vw,44px);font-weight:400;letter-spacing:-.01em;line-height:1.05;
+}
+.s-cat_head .s-cat_eyebrow{
+  font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--muted);
+  margin-bottom:14px;display:block;
+}
+.s-cat_grid{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:16px;
+}
+.s-cat_card{
+  position:relative;display:block;
+  aspect-ratio:3/4;border-radius:8px;overflow:hidden;
+  background:#1a1a18;
+  opacity:0;transform:translateY(28px);
+  transition:opacity 1s var(--ease), transform 1s var(--ease);
+}
+.s-cat_card.is-visible{opacity:1;transform:translateY(0)}
+.s-cat_card:nth-child(2){transition-delay:.06s}
+.s-cat_card:nth-child(3){transition-delay:.12s}
+.s-cat_card:nth-child(4){transition-delay:.18s}
+.s-cat_card img{
+  width:100%;height:100%;object-fit:cover;
+  transition:transform 1.2s var(--ease);
+}
+.s-cat_card:nth-child(1) img{object-position:50% 30%}
+.s-cat_card:nth-child(2) img{object-position:50% 60%}
+.s-cat_card:nth-child(3) img{object-position:50% 20%}
+.s-cat_card:nth-child(4) img{object-position:50% 80%}
+.s-cat_card:hover img{transform:scale(1.05)}
+.s-cat_card::after{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,transparent 50%,rgba(0,0,0,.55) 100%);
+}
+.s-cat_card h3{
+  position:absolute;left:18px;bottom:16px;right:18px;z-index:1;
+  font-family:var(--font-serif);
+  color:#fff;font-size:22px;font-weight:400;letter-spacing:-.01em;
+}
+.s-cat_card .s-cat_meta{
+  position:absolute;left:18px;top:18px;z-index:1;
+  font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:rgba(255,255,255,.8);
+}
+@media(max-width:900px){
+  .s-cat_grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:520px){
+  .s-cat_grid{grid-template-columns:1fr}
+  .s-cat_head{flex-direction:column;align-items:flex-start}
+}
+
+/* ============================================================
+   STACKING CARDS — "This is the AE.1"
+   ============================================================ */
+.s-stacking{
+  padding:var(--fluid-md) 0 var(--fluid-lg);
+}
+.s-stacking_inner{
+  max-width:var(--container);margin:0 auto;padding:0 var(--gutter);
+  display:grid;grid-template-columns:1fr 1fr;gap:48px;
+  /* min-height removed — section height derives from cards × gap */
+}
+.s-stacking_text{
+  position:sticky;top:50%;transform:translateY(-50%);
+  height:fit-content;align-self:start;
+  padding-top:30vh;
+}
+.s-stacking_eyebrow{
+  font-size:16px;font-weight:400;margin-bottom:16px;opacity:.7;
+}
+.s-stacking_title{
+  font-size:clamp(16px,1.1vw,16px);font-weight:400;
+  letter-spacing:0;
+}
+.s-stacking_nav{
+  display:flex;gap:8px;margin-top:24px;
+}
+.s-stacking_dot{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--black);opacity:.2;transition:opacity .3s;
+}
+.s-stacking_dot.active{opacity:1}
+.s-stacking_cta{
+  display:inline-flex;align-items:center;gap:8px;
+  margin-top:32px;font-size:16px;font-weight:400;
+  padding:12px 24px;border-radius:var(--radius-btn);
+  background:rgba(0,0,0,.08);backdrop-filter:blur(12px);
+  transition:background .3s;
+}
+.s-stacking_cta:hover{background:rgba(0,0,0,.15)}
+.s-stacking_cta svg{width:14px;height:14px}
+
+.s-stacking_cards{
+  position:relative;
+  display:flex;flex-direction:column;
+  gap:60vh; /* one viewport-ish of scroll per card transition */
+}
+.s-stacking_card{
+  position:sticky;top:127px;
+  width:100%;aspect-ratio:592/644;
+  border-radius:12px;overflow:hidden;
+  box-shadow:0 8px 40px rgba(0,0,0,.12);
+}
+.s-stacking_card img{width:100%;height:100%;object-fit:cover}
+.s-stacking_card-overlay{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  justify-content:flex-end;padding:40px;
+  background:linear-gradient(0deg,rgba(0,0,0,.5) 0%,transparent 60%);
+  color:var(--white);
+}
+.s-stacking_card-overlay p{
+  font-size:clamp(32px,3.3vw,48px);font-weight:400;
+  letter-spacing:-.03em;line-height:1.05;
+}
+
+/* ============================================================
+   FEATURE CAROUSEL
+   ============================================================ */
+.s-features{
+  padding:var(--fluid-md) 0;
+}
+.s-features_head{
+  max-width:768px;margin:0 auto;text-align:center;
+  padding:0 var(--gutter);margin-bottom:48px;
+}
+.s-features_title{
+  font-size:clamp(32px,3.5vw,48px);font-weight:400;
+  letter-spacing:-.03em;line-height:1.1;
+}
+.s-features_carousel{
+  display:flex;gap:24px;overflow-x:auto;scroll-snap-type:x mandatory;
+  padding:0 var(--gutter) 32px;scrollbar-width:none;
+}
+.s-features_carousel::-webkit-scrollbar{display:none}
+.s-features_card{
+  flex:0 0 calc(41.1% - 12px);scroll-snap-align:center;
+  background:var(--cream);border-radius:12px;overflow:hidden;
+  display:flex;flex-direction:column;
+}
+.s-features_card-img{
+  aspect-ratio:592/260;overflow:hidden;position:relative;
+}
+.s-features_card{
+  opacity:0;transform:translateY(40px);
+  transition:transform 1.8s var(--ease), opacity 1.8s var(--ease);
+}
+.s-features_card.is-visible{opacity:1;transform:translateY(0)}
+.s-features_card:nth-child(2){transition-delay:.08s}
+.s-features_card:nth-child(3){transition-delay:.16s}
+.s-features_card-img img{width:100%;height:100%;object-fit:cover;transition:transform 1.2s var(--ease)}
+.s-features_card:hover .s-features_card-img img{transform:scale(1.04)}
+.s-features_card-body{
+  padding:28px 32px 32px;display:flex;flex-direction:column;gap:8px;flex:1;
+}
+.s-features_card-label{
+  font-size:14px;font-weight:400;color:var(--muted);
+}
+.s-features_card-heading{
+  font-size:clamp(22px,2vw,28px);font-weight:400;
+  letter-spacing:-.02em;line-height:1.2;
+}
+.s-features_card-link{
+  margin-top:auto;padding-top:16px;
+  font-size:14px;display:inline-flex;align-items:center;gap:6px;
+  opacity:.7;transition:opacity .25s;
+}
+.s-features_card-link:hover{opacity:1}
+.s-features_card-link svg{width:12px;height:12px}
+
+/* ============================================================
+   CTA BANNER
+   ============================================================ */
+.s-cta{
+  max-width:var(--container);margin:0 auto;
+  padding:var(--fluid-md) var(--gutter);
+}
+.s-cta_inner{
+  position:relative;border-radius:12px;overflow:hidden;
+  aspect-ratio:1440/800;display:flex;align-items:flex-end;
+  padding:48px;
+}
+.s-cta_inner img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.s-cta_inner::after{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(0deg,rgba(0,0,0,.55) 0%,transparent 50%);
+}
+.s-cta_content{position:relative;z-index:1;color:var(--white)}
+.s-cta_content h2{
+  font-size:clamp(28px,3vw,48px);font-weight:400;
+  letter-spacing:-.03em;line-height:1.1;margin-bottom:24px;max-width:600px;
+}
+.s-cta_btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:12px 28px;border-radius:var(--radius-btn);
+  background:rgba(255,255,255,.15);backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  color:var(--white);font-size:16px;font-weight:400;
+  border:1px solid rgba(255,255,255,.25);
+  transition:background .3s;
+}
+.s-cta_btn:hover{background:rgba(255,255,255,.25)}
+.s-cta_btn svg{width:14px;height:14px}
+
+/* ============================================================
+   BELIEFS
+   ============================================================ */
+.s-beliefs{
+  padding:var(--fluid-lg) var(--gutter);
+  max-width:var(--container);margin:0 auto;
+  display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;
+}
+.s-beliefs_text{max-width:520px}
+.s-beliefs_text p{
+  font-size:clamp(18px,1.5vw,22px);font-weight:400;
+  color:var(--muted);line-height:1.6;
+}
+.s-beliefs_text p + p{margin-top:20px}
+.s-beliefs_img{
+  border-radius:12px;overflow:hidden;aspect-ratio:1/1;
+}
+.s-beliefs_img img{width:100%;height:100%;object-fit:cover}
+
+/* ============================================================
+   JOURNAL
+   ============================================================ */
+.s-journal{
+  padding:var(--fluid-lg) 0 var(--fluid-md);
+}
+.s-journal_head{
+  max-width:var(--container);margin:0 auto;
+  padding:0 var(--gutter);margin-bottom:48px;
+  display:flex;justify-content:space-between;align-items:flex-end;
+}
+.s-journal_title{
+  font-size:clamp(32px,3.5vw,48px);font-weight:400;
+  letter-spacing:-.03em;line-height:1.1;
+}
+.s-journal_all{
+  font-size:14px;opacity:.6;border-bottom:1px solid currentColor;
+  padding-bottom:2px;transition:opacity .25s;
+}
+.s-journal_all:hover{opacity:1}
+.s-journal_carousel{
+  display:flex;gap:24px;overflow-x:auto;scroll-snap-type:x mandatory;
+  padding:0 var(--gutter) 32px;scrollbar-width:none;
+}
+.s-journal_carousel::-webkit-scrollbar{display:none}
+.s-journal_item{
+  flex:0 0 calc(33.33% - 16px);scroll-snap-align:start;
+  min-width:320px;
+}
+.s-journal_thumb{
+  aspect-ratio:700/555;border-radius:8px;overflow:hidden;margin-bottom:16px;
+}
+.s-journal_thumb img{
+  width:100%;height:100%;object-fit:cover;
+  transition:transform 1s var(--ease-out);
+}
+.s-journal_item:hover .s-journal_thumb img{transform:scale(1.04)}
+.s-journal_meta{
+  font-size:12px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:6px;
+}
+.s-journal_item h4{
+  font-size:18px;font-weight:400;letter-spacing:-.01em;line-height:1.35;
+  max-width:340px;
+}
+
+/* ============================================================
+   NEWSLETTER
+   ============================================================ */
+.s-newsletter{
+  padding:var(--fluid-lg) var(--gutter);
+  background:var(--cream);
+}
+.s-newsletter_inner{
+  max-width:var(--container);margin:0 auto;
+  display:flex;justify-content:space-between;align-items:center;gap:60px;
+  flex-wrap:wrap;
+}
+.s-newsletter h3{
+  font-size:clamp(28px,3vw,42px);font-weight:400;
+  letter-spacing:-.03em;line-height:1.15;max-width:500px;
+}
+.s-newsletter_form{
+  display:flex;align-items:center;border-bottom:1.5px solid rgba(0,0,0,.3);
+  min-width:340px;flex:1;max-width:480px;
+}
+.s-newsletter_form input{
+  flex:1;background:transparent;border:0;outline:0;
+  padding:14px 0;font-size:16px;font-family:var(--font);color:var(--black);
+}
+.s-newsletter_form input::placeholder{color:var(--muted)}
+.s-newsletter_form button{
+  padding:14px 4px;font-size:14px;letter-spacing:.08em;
+  text-transform:uppercase;font-weight:500;opacity:.7;transition:opacity .25s;
+}
+.s-newsletter_form button:hover{opacity:1}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.c-footer{
+  padding:80px var(--gutter) 32px;background:var(--white);
+  border-top:1px solid rgba(0,0,0,.08);
+}
+.c-footer_grid{
+  max-width:var(--container);margin:0 auto 56px;
+  display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;
+}
+.c-footer_brand{
+  font-size:48px;font-weight:500;letter-spacing:-.04em;
+}
+.c-footer_brand-desc{
+  margin-top:16px;font-size:14px;color:var(--muted);
+  max-width:280px;line-height:1.5;
+}
+.c-footer_col h5{
+  font-size:11px;font-weight:500;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--muted);margin-bottom:18px;
+}
+.c-footer_col ul{display:flex;flex-direction:column;gap:10px}
+.c-footer_col li a{font-size:14px;opacity:.8;transition:opacity .25s}
+.c-footer_col li a:hover{opacity:1}
+.c-footer_bottom{
+  max-width:var(--container);margin:0 auto;
+  padding-top:20px;border-top:1px solid rgba(0,0,0,.08);
+  display:flex;justify-content:space-between;
+  font-size:12px;color:var(--muted);letter-spacing:.03em;
+}
+.c-footer_socials{display:flex;gap:20px}
+.c-footer_socials a{opacity:.6;transition:opacity .25s}
+.c-footer_socials a:hover{opacity:1}
+.c-footer_socials svg{width:18px;height:18px}
+
+/* ============================================================
+   REVEAL ANIMATIONS
+   ============================================================ */
+.reveal{
+  opacity:0;transform:translateY(24px);
+  transition:opacity .9s var(--ease),transform .9s var(--ease);
+}
+.reveal.is-visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:.1s}
+.reveal-delay-2{transition-delay:.2s}
+.reveal-delay-3{transition-delay:.3s}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media(max-width:900px){
+  .c-header_nav.left{display:none}
+  .s-stacking_inner{grid-template-columns:1fr;min-height:auto}
+  .s-stacking_text{position:static;transform:none;margin-bottom:40px}
+  .s-stacking_card{position:relative;top:auto;margin-bottom:24px}
+  .s-beliefs{grid-template-columns:1fr;gap:40px}
+  .s-features_card{flex:0 0 80%}
+  .s-journal_item{flex:0 0 80%}
+  .c-footer_grid{grid-template-columns:1fr 1fr;gap:32px}
+  .s-newsletter_inner{flex-direction:column;align-items:flex-start}
+  .s-newsletter_form{min-width:100%;max-width:100%}
+}
+@media(max-width:600px){
+  .c-header_right .c-header_link{display:none}
+  .c-footer_grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header class="c-header" id="header">
+  <nav class="c-header_nav left">
+    <a href="#products" class="c-header_link">Product</a>
+  </nav>
+  <a href="#" class="c-header_logo" aria-label="Laseur Antique home">
+    <img src="https://laseurantique.nl/wp-content/uploads/2021/05/laseur_logo_01.png"
+         alt="LASEUR ANTIQUE" width="140" height="70"
+         onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'brand-fallback',textContent:'LASEUR ANTIQUE'}))">
+  </a>
+  <div class="c-header_right">
+    <a href="#contact" class="c-header_link">Contact Us</a>
+    <a href="mailto:info@laseurantique.nl" class="c-header_cta">Mail</a>
+  </div>
+</header>
+
+<!-- ===== HERO ===== -->
+<section class="c-hero" id="hero">
+  <div class="c-hero_sticky">
+    <div class="c-hero_mask">
+      <div class="c-hero_inner">
+        <div class="c-hero_bg">
+          <video class="c-hero_video" autoplay muted loop playsinline preload="metadata"
+                 poster="https://images.unsplash.com/photo-1542856391-010fb87dcfed?auto=format&fit=crop&w=2400&q=85"
+                 onerror="this.remove()">
+            <source src="https://videos.pexels.com/video-files/17550507/17550507-hd_1080_1920_30fps.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="c-hero_content">
+          <h1 data-split>
+            <span class="line">Art Nouveau. Art Deco.</span>
+            <span class="line">Amsterdam School.</span>
+          </h1>
+        </div>
+        <div class="c-hero_scroll">
+          SCROLL TO EXPLORE
+          <span class="c-hero_scroll-line"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cluster grid that converges as user scrolls past sticky hero -->
+  <div class="c-hero_grid-wrap">
+    <div class="c-hero_grid">
+      <div class="c-hero_col">
+        <figure class="c-hero_grid-item" data-img="1">
+          <img src="https://photos.smugmug.com/photos/i-XJWr8Tq/0/NRBbV7ZJdnmLWThWvhD7QLKHfXH9Jf3BFNtM58DjH/X3/i-XJWr8Tq-X3.jpg" alt="Laseur Antique collection" loading="lazy">
+        </figure>
+        <figure class="c-hero_grid-item -small" data-img="2">
+          <img src="https://photos.smugmug.com/photos/i-JXvr4hk/0/NcSQ3T7kkJZvCrMv2D4vwD5QzTW4zKXPRwvWrHtTC/X3/i-JXvr4hk-X3.jpg" alt="Antique detail" loading="lazy">
+        </figure>
+      </div>
+      <div class="c-hero_col">
+        <figure class="c-hero_grid-item -large" data-img="3">
+          <img src="https://photos.smugmug.com/photos/i-wkxwk95/0/KRwgMSnspKbCCGTqsV7KgSpT2VBQZmN63JhqGpmsG/X3/i-wkxwk95-X3.jpg" alt="Laseur Antique signature piece" loading="lazy">
+        </figure>
+      </div>
+      <div class="c-hero_col">
+        <figure class="c-hero_grid-item" data-img="4">
+          <img src="https://photos.smugmug.com/photos/i-SXKG52H/0/KHnGMvsSb64F49fFcB9qQXSxMcHmZ3pNFgdrCr7BL/X3/i-SXKG52H-X3.jpg" alt="Gallery showroom" loading="lazy">
+        </figure>
+        <figure class="c-hero_grid-item -small" data-img="5">
+          <img src="https://photos.smugmug.com/photos/i-cq8Wr7Z/0/LfTkXFqbzNmMczmXKTQ65CVtNjZbsRgGwG9qb3KZL/X3/i-cq8Wr7Z-X3.jpg" alt="Curated antique" loading="lazy">
+        </figure>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== INTRO ===== -->
+<section class="s-intro">
+  <p class="reveal">
+    A curated gallery of European decorative arts. Every object on display at Laseur Antique is hand-selected for its provenance, craftsmanship, and the quiet authority only time can give.
+  </p>
+</section>
+
+<!-- ===== CATEGORIES ===== -->
+<section class="s-categories" id="categories">
+  <div class="s-cat_head">
+    <div>
+      <span class="s-cat_eyebrow reveal">Categories</span>
+      <h2 class="reveal">Four collections, one obsession.</h2>
+    </div>
+    <a href="#" class="s-journal_all reveal">View all</a>
+  </div>
+  <div class="s-cat_grid">
+    <a href="product.html" class="s-cat_card">
+      <span class="s-cat_meta">01</span>
+      <img src="https://photos.smugmug.com/photos/i-XJWr8Tq/0/NRBbV7ZJdnmLWThWvhD7QLKHfXH9Jf3BFNtM58DjH/X3/i-XJWr8Tq-X3.jpg" alt="Art Nouveau">
+      <h3>Art Nouveau</h3>
+    </a>
+    <a href="product.html" class="s-cat_card">
+      <span class="s-cat_meta">02</span>
+      <img src="https://photos.smugmug.com/photos/i-wkxwk95/0/KRwgMSnspKbCCGTqsV7KgSpT2VBQZmN63JhqGpmsG/X3/i-wkxwk95-X3.jpg" alt="Art Deco">
+      <h3>Art Deco</h3>
+    </a>
+    <a href="product.html" class="s-cat_card">
+      <span class="s-cat_meta">03</span>
+      <img src="https://photos.smugmug.com/photos/i-SXKG52H/0/KHnGMvsSb64F49fFcB9qQXSxMcHmZ3pNFgdrCr7BL/X3/i-SXKG52H-X3.jpg" alt="Amsterdam School">
+      <h3>Amsterdam School</h3>
+    </a>
+    <a href="product.html" class="s-cat_card">
+      <span class="s-cat_meta">04</span>
+      <img src="https://photos.smugmug.com/photos/i-cq8Wr7Z/0/LfTkXFqbzNmMczmXKTQ65CVtNjZbsRgGwG9qb3KZL/X3/i-cq8Wr7Z-X3.jpg" alt="Asian Objects">
+      <h3>Asian Objects</h3>
+    </a>
+  </div>
+</section>
+
+
+<!-- ===== NEWSLETTER ===== -->
+<section class="s-newsletter" id="newsletter">
+  <div class="s-newsletter_inner">
+    <h3>Sign up for the newsletter.</h3>
+    <form class="s-newsletter_form" onsubmit="event.preventDefault();this.querySelector('button').textContent='THANK YOU →'">
+      <input type="email" placeholder="Your email address" required>
+      <button type="submit">SUBSCRIBE →</button>
+    </form>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="c-footer">
+  <div class="c-footer_grid">
+    <div>
+      <div class="c-footer_brand">Laseur Antique</div>
+      <p class="c-footer_brand-desc">
+        A small, exceptional gallery in Amsterdam Centrum. Art Nouveau, Art Deco, Amsterdam School, and Asian objects.
+      </p>
+    </div>
+    <div class="c-footer_col">
+      <h5>Categories</h5>
+      <ul>
+        <li><a href="#">Art Nouveau</a></li>
+        <li><a href="#">Art Deco</a></li>
+        <li><a href="#">Amsterdam School</a></li>
+        <li><a href="#">Asian Objects</a></li>
+      </ul>
+    </div>
+    <div class="c-footer_col">
+      <h5>Company</h5>
+      <ul>
+        <li><a href="#">About us</a></li>
+        <li><a href="#">FAQ</a></li>
+        <li><a href="#">Shipping</a></li>
+        <li><a href="#">Visit gallery</a></li>
+      </ul>
+    </div>
+    <div class="c-footer_col">
+      <h5>Connect</h5>
+      <ul>
+        <li><a href="#">Facebook</a></li>
+        <li><a href="#">Instagram</a></li>
+        <li><a href="mailto:info@laseurantique.nl">Email</a></li>
+        <li><a href="#">Newsletter</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="c-footer_bottom">
+    <span>© 2026 Laseur Antique · Amsterdam</span>
+    <div style="display:flex;gap:24px">
+      <a href="#">Privacybeleid</a>
+      <a href="#">Algemene voorwaarden</a>
+    </div>
+  </div>
+</footer>
+
+<!-- ===== Lenis smooth scroll (matches lightshiprv) ===== -->
+<script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+
+<!-- ===== JS ===== -->
+<script>
+(function(){
+  /* --- State refs (top-level so all funcs see them) --- */
+  var lenisRef = null;
+  var gridWrap = null;
+  var gridItems = [];
+
+  /* --- Convergence updater --- */
+  var updateConverge = function(){
+    if(!gridWrap) return;
+    var rect = gridWrap.getBoundingClientRect();
+    var vh = window.innerHeight;
+    var start = vh;
+    var end = vh * 0.3;
+    var raw = (start - rect.top) / (start - end);
+    var progress = Math.max(0, Math.min(1, raw));
+    var eased = 1 - Math.pow(1 - progress, 3);
+    for(var i = 0; i < gridItems.length; i++){
+      var item = gridItems[i];
+      var cs = getComputedStyle(item);
+      var txInit = parseFloat(cs.getPropertyValue('--tx-init')) || 0;
+      var tyInit = parseFloat(cs.getPropertyValue('--ty-init')) || 0;
+      item.style.setProperty('--tx', (txInit * (1 - eased)).toFixed(1) + 'px');
+      item.style.setProperty('--ty', (tyInit * (1 - eased)).toFixed(1) + 'px');
+      item.style.setProperty('--s', (0.88 + 0.12 * eased).toFixed(3));
+      item.style.setProperty('--o', eased.toFixed(3));
+    }
+  };
+
+  /* --- RAF loop for Lenis (smooth scroll) --- */
+  var raf = function(time){
+    try {
+      if(lenisRef) lenisRef.raf(time);
+    } catch(e){}
+    requestAnimationFrame(raf);
+  };
+  requestAnimationFrame(raf);
+
+  /* --- Scroll-driven convergence (sync on scroll event) --- */
+  window.addEventListener('scroll', updateConverge, {passive:true});
+  window.addEventListener('resize', updateConverge);
+
+  /* --- Lenis smooth scroll initialization --- */
+  if(window.Lenis){
+    lenisRef = new window.Lenis({
+      duration: 1.2,
+      easing: function(t){ return Math.min(1, 1.001 - Math.pow(2, -10 * t)); },
+      smoothWheel: true,
+      wheelMultiplier: 1,
+      touchMultiplier: 2,
+      lerp: 0.1
+    });
+    window.__lenis = lenisRef;
+
+    // Intercept anchor clicks for Lenis-driven smooth scroll
+    document.addEventListener('click', function(e){
+      var a = e.target.closest('a[href^="#"]');
+      if(!a) return;
+      var h = a.getAttribute('href');
+      if(h.length <= 1) return;
+      var t = document.querySelector(h);
+      if(t){ e.preventDefault(); lenisRef.scrollTo(t, {offset: -64}); }
+    });
+  }
+
+  /* --- Initialize convergence target refs --- */
+  function initConverge(){
+    gridWrap = document.querySelector('.c-hero_grid-wrap');
+    gridItems = gridWrap ? Array.from(gridWrap.querySelectorAll('.c-hero_grid-item')) : [];
+  }
+
+  /* --- SplitText: wrap each word in <span class="word"> (stagger via CSS nth-child) --- */
+  document.querySelectorAll('[data-split]').forEach(el => {
+    el.querySelectorAll('.line').forEach(line => {
+      const text = line.textContent.trim();
+      line.innerHTML = '';
+      text.split(' ').forEach((w) => {
+        const word = document.createElement('span');
+        word.className = 'word';
+        word.textContent = w;
+        line.appendChild(word);
+      });
+    });
+  });
+
+  /* --- Trigger hero reveal after window.load + RAF (post-paint) --- */
+  const triggerHero = () => requestAnimationFrame(() => requestAnimationFrame(() => {
+    document.querySelectorAll('[data-split]').forEach(el => el.classList.add('is-revealed'));
+  }));
+  if(document.readyState === 'complete') triggerHero();
+  else window.addEventListener('load', triggerHero);
+
+  /* --- Reveal on scroll (excl. hero grid — that uses scroll-progress instead) --- */
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(en => {
+      if(en.isIntersecting){
+        en.target.classList.add('is-visible');
+        io.unobserve(en.target);
+      }
+    });
+  }, {threshold: 0.08, rootMargin: '0px 0px -6% 0px'});
+  document.querySelectorAll('.reveal, .s-features_card, .s-cat_card').forEach(el => io.observe(el));
+
+  /* --- Initialize convergence grid items + run once --- */
+  initConverge();
+  updateConverge();
+
+  /* --- Header text color adapts to bg behind it (light section detection) --- */
+  const header = document.getElementById('header');
+  const lightSections = ['.c-hero_grid-wrap','.s-intro','.s-categories','.s-stacking','.s-features','.s-beliefs','.s-journal','.s-newsletter','footer'];
+  function updateHeaderTone(){
+    const probeY = 32; // probe just below header
+    let onLight = false;
+    for(const sel of lightSections){
+      const el = document.querySelector(sel);
+      if(!el) continue;
+      const r = el.getBoundingClientRect();
+      if(r.top <= probeY && r.bottom > probeY){ onLight = true; break; }
+    }
+    header.classList.toggle('is-light', onLight);
+  }
+  window.addEventListener('scroll', updateHeaderTone, {passive:true});
+  updateHeaderTone();
+
+})();
+</script>
+</body>
+</html>
